@@ -4,23 +4,25 @@ import { TUser } from './user.interface';
 const userSchema = new Schema<TUser>({
   id: {
     type: String,
-    required: true,
     unique: true,
+    default: () => Math.random().toString(36).substr(2, 9),
+  },
+  name: {
+    type: String,
+    required: [true, 'Name is required.'],
   },
   email: {
     type: String,
-    required: true,
+    required: [true, 'Email is required.'],
     unique: true,
   },
   password: {
     type: String,
-    required: true,
-    unique: true,
+    required: [true, 'Password is required.'],
   },
   role: {
     type: String,
     enum: ['admin', 'user'],
-    required: true,
     default: 'user',
   },
   isBlocked: {
