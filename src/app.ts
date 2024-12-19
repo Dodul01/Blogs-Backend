@@ -2,6 +2,7 @@ import express, { Application, Request, Response } from 'express';
 import cookiePerser from 'cookie-parser';
 import cors from 'cors';
 import { UserRouter } from './app/modules/User/user.route';
+import { AuthRouter } from './app/modules/Auth/auth.route';
 
 const app: Application = express();
 
@@ -12,6 +13,7 @@ app.use(cors({ origin: ['http://localhost:5173'] }));
 // Application routes
 
 app.use('/api/v1', UserRouter);
+app.use('/api/v1', AuthRouter);
 
 // Health check
 app.get('/health', (req: Request, res: Response) => {
