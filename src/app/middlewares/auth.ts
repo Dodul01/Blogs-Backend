@@ -1,65 +1,3 @@
-// import { NextFunction, Request, Response } from 'express';
-// import jwt, { JwtPayload } from 'jsonwebtoken';
-// import config from '../config';
-// import { User } from '../modules/User/user.model';
-
-// type TUserRole = 'admin' | 'user';
-
-// const auth = (...requiredRoles: TUserRole[]) => {
-//   return async (
-//     req: Request,
-//     res: Response,
-//     next: NextFunction,
-//   ): Promise<void> => {
-//     try {
-//       const token = req.headers.authorization;
-
-//       // check if the token is missing
-//       if (!token) {
-//         res.status(401).json({ message: 'Token is missing' });
-//       }
-
-//       // check if the token is valid
-//       let decoded: JwtPayload;
-
-//       try {
-//         decoded = jwt.verify(
-//           token as string,
-//           config.jwt_access_secreat as string,
-//         ) as JwtPayload;
-//       } catch (err) {
-//         res.status(401).json({ error: err, message: 'Token is invalid' });
-//       }
-//       const { email, role } = decoded;
-
-//       const user = await User.findOne({ email });
-
-//       //check if the user exsist
-//       if (!user) {
-//         res.status(401).json({ message: 'User not found' });
-//       }
-
-//       //check if the user is blocked
-//       if (user.isBlocked) {
-//         return res.status(401).json({ message: 'User is blocked' });
-//       }
-
-//       //check if the user has the required role
-//       if (requiredRoles && !requiredRoles.includes(role)) {
-//         return res.status(403).json({ message: 'Forbidden' });
-//       }
-
-//       //attach the user to the request object
-//       req.user = user;
-//       next();
-//     } catch (err) {
-//       res.status(500).json({ message: err });
-//     }
-//   };
-// };
-
-// export default auth;
-
 import { NextFunction, Request, Response } from 'express';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import config from '../config';
@@ -74,13 +12,18 @@ const auth = (...requiredRoles: TUserRole[]) => {
     next: NextFunction,
   ): Promise<void> => {
     try {
-      const token = req.headers.authorization;
+      const authHeader = req.headers.authorization;
 
-      // Check if the token is missing
-      if (!token) {
-        res.status(401).json({ message: 'Token is missing' });
+      // Check if the Authorization header is missing
+      if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        res
+          .status(401)
+          .json({ message: 'Authorization header is missing or invalid' });
         return;
       }
+
+      // Extract the token from the Authorization header
+      const token = authHeader.split(' ')[1];
 
       // Verify the token
       let decoded: JwtPayload;
@@ -90,13 +33,12 @@ const auth = (...requiredRoles: TUserRole[]) => {
           config.jwt_access_secreat as string,
         ) as JwtPayload;
       } catch (err) {
-        res
-          .status(401)
-          .json({ message: 'Token is invalid', error: err });
+        res.status(401).json({ message: 'Token is invalid', error: err });
         return;
       }
 
-      const { email, role } = decoded;
+      // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
+      const { email, role, _id } = decoded;
 
       // Check if the user exists
       const user = await User.findOne({ email });
@@ -118,12 +60,11 @@ const auth = (...requiredRoles: TUserRole[]) => {
       }
 
       // Attach the user to the request object
-      // (req as any).user = user;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (req as any).user = decoded;
       next();
     } catch (err) {
-      res
-        .status(500)
-        .json({ message: 'Internal server error', error: err });
+      res.status(500).json({ message: 'Internal server error', error: err });
     }
   };
 };

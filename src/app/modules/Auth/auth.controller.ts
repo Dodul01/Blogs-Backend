@@ -6,8 +6,6 @@ import config from '../../config';
 const loginUser = async (req: Request, res: Response) => {
   const result = await AuthServices.loginUser(req.body);
   const { accessToken, refreshToken } = result;
-  console.log('accessToken', accessToken);
-  console.log('refreshToken', refreshToken);
 
   res.cookie('refreshToken', refreshToken, {
     secure: config.NODE_ENV == 'production',

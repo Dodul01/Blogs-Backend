@@ -8,16 +8,17 @@ const createUser = async (req: Request, res: Response) => {
     const zodParseedUser = userValidation.userValidationSchema.parse(user);
     // sending default value for isBlocked
     const userData = { ...zodParseedUser, isBlocked: false as const };
-    const { _id, name, email } = await UserService.createUserIntoDB(userData);
+    const result = await UserService.createUserIntoDB(userData);
 
     res.status(201).json({
       success: true,
       message: 'User registered successfully',
       statusCode: 201,
+      result,
       data: {
-        _id: _id,
-        name: name,
-        email: email,
+        _id: result._id,
+        name: result.name,
+        email: result.email,
       },
     });
   } catch (error) {

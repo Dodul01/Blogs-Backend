@@ -5,11 +5,6 @@ import bcrypt from 'bcrypt';
 
 const userSchema = new Schema<TUser>(
   {
-    id: {
-      type: String,
-      unique: true,
-      default: () => Math.random().toString(36).substr(2, 9),
-    },
     name: {
       type: String,
       required: [true, 'Name is required.'],
