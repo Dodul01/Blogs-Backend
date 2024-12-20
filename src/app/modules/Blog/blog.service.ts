@@ -1,4 +1,5 @@
 import { User } from '../User/user.model';
+import { BlogSearchableFields } from './blog.constant';
 import { TBlog } from './blog.interface';
 import { Blog } from './blog.model';
 
@@ -58,8 +59,8 @@ const updateBlogIntoDB = async (
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const deleteBlogFromDB = async (id: string, user: any) => {
-  console.log(id);
-  console.log(user);
+  // console.log(id);
+  // console.log(user);
   // check if the blog exists
   const blog = await Blog.findById(id);
 
@@ -87,11 +88,45 @@ const deleteBlogFromDB = async (id: string, user: any) => {
     'author',
     '-password',
   );
-  return result
+  return result;
+};
+
+const getAllBlogsFromDB = async (query: Record<string, unknown>) => {
+  const {
+    search,
+    sortBy = 'createdAt',
+    sortOrder = 'desc',
+    filter,
+  } = query as {
+    search?: string;
+    sortBy?: string;
+    sortOrder?: string;
+    filter?: string;
+  };
+
+  const searchCondition = search
+    ? {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        $or: BlogSearchableFields.map((field: any) => ({
+          [field]: { $regex: search, $options: 'i' }, // Case-insensitive regex search
+        })),
+      }
+    : {};
+
+  const filterCondition = filter ? { author: filter } : {};
+
+  const queryCondition = { ...searchCondition, ...filterCondition };
+
+  const blogs = await Blog.find(queryCondition)
+    .sort({ [sortBy]: sortOrder === 'asc' ? 1 : -1 })
+    .populate('author', '-password');
+
+  return blogs;
 };
 
 export const BlogServices = {
   createBlogIntoDB,
   updateBlogIntoDB,
   deleteBlogFromDB,
+  getAllBlogsFromDB,
 };
