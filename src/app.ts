@@ -21,8 +21,8 @@ app.use('/api/', BlogRouter);
 app.use('/api/admin', AdminRouter);
 
 // Health check
-app.get('/health', (req: Request, res: Response) => {
-  res.send({ status: 200, message: 'Hello world!' });
+app.get('/', (req: Request, res: Response) => {
+  res.send({ status: 200, message: 'Server is running' });
 });
 
 app.use(notFound);
