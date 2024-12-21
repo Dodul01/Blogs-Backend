@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable no-unused-vars */
 import { Request, Response } from 'express';
 import { AdminServices } from './admin.service';
 
@@ -12,7 +14,6 @@ const blockUser = async (req: Request, res: Response) => {
     success: true,
     message: 'User blocked successfully',
     statusCode: 200,
-    result,
   });
 };
 
@@ -24,7 +25,6 @@ const deleteBlog = async (req: Request, res: Response) => {
     success: true,
     message: 'Blog deleted successfully',
     statusCode: 200,
-    result,
   });
 };
 

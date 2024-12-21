@@ -5,6 +5,7 @@ import { UserRouter } from './app/modules/User/user.route';
 import { AuthRouter } from './app/modules/Auth/auth.route';
 import { BlogRouter } from './app/modules/Blog/blog.router';
 import { AdminRouter } from './app/modules/Admin/admin.route';
+import notFound from './app/middlewares/notFound';
 
 const app: Application = express();
 
@@ -23,5 +24,7 @@ app.use('/api/admin', AdminRouter);
 app.get('/health', (req: Request, res: Response) => {
   res.send({ status: 200, message: 'Hello world!' });
 });
+
+app.use(notFound);
 
 export default app;

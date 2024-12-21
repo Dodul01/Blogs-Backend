@@ -101,13 +101,13 @@ const deleteBlog = async (req: Request, res: Response) => {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const user = (req as any).user;
 
+    // eslint-disable-next-line no-unused-vars, @typescript-eslint/no-unused-vars
     const result = await BlogServices.deleteBlogFromDB(id, user);
 
     res.status(200).json({
       success: true,
       message: 'Blog deleted successfully',
       statusCode: 200,
-      data: result,
     });
   } catch (error) {
     res.status(500).json({

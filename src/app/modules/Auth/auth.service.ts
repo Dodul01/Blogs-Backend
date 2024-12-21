@@ -8,19 +8,31 @@ const loginUser = async (payload: TLoginUser) => {
   const user = await User.findOne({ email: payload.email });
 
   if (!user) {
-    throw new Error('User not found');
+    throw {
+      message: 'User not found',
+      statusCode: 404,
+      details: { field: 'email', issue: 'No user exists with the given email' },
+    };
   }
 
-  const isBlocked = user.isBlocked;
-
-  if (isBlocked) {
-    throw new Error('User is blocked');
+  if (user.isBlocked) {
+    throw {
+      message: 'User is blocked',
+      statusCode: 403,
+      details: { field: 'isBlocked', issue: 'This user account is blocked' },
+    };
   }
 
-  const isPasswordMath = await bcrypt.compare(payload.password, user.password);
-
-  if (!isPasswordMath) {
-    throw new Error('Password not match');
+  const isPasswordMatch = await bcrypt.compare(payload.password, user.password);
+  if (!isPasswordMatch) {
+    throw {
+      message: 'Invalid credentials',
+      statusCode: 401,
+      details: {
+        field: 'password',
+        issue: 'The provided password is incorrect',
+      },
+    };
   }
 
   const jwtPayload = {
